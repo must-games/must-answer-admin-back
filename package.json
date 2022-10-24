@@ -1,0 +1,25 @@
+{
+  "name": "quiz-land_admin-back",
+  "version": "0.0.1",
+  "description": "quiz-land-admin-backend using Nodejs",
+  "main": "app.js",
+  "author": "Simon",
+  "license": "proprietary - used in KT",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" %% exit 1",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "express-fileupload": "^1.4.0",
+    "helmet": "^6.0.0",
+    "ioredis": "^5.2.3",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
