@@ -1,4 +1,4 @@
-const config = require("./config");
+const config = require("./config/config");
 const session = require("./session");
 const querystring = require("node:querystring");
 const ErrorMessage = require("./errorMessage");

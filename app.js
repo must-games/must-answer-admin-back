@@ -3,7 +3,7 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const fileUpload = require("express-fileupload");
 const querystring = require("node:querystring");
-const config = require("./config");
+const config = require("./config/config");
 const session = require("./session");
 const debugging = require("./debugging");
 
