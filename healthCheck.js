@@ -1,31 +1,37 @@
-const tcpp = require('tcp-ping');
+const tcpp = require("tcp-ping");
+const config = require("./config/config");
+const watchList = require("./config/watchList");
 
-const checkTarget = {
-    address: 'localhost',
-    port: 80
+const isDevMode = config.hasOwnProperty("devMode") ? config.devMode : false;
+
+const server_list = isDevMode ? watchList.dev_server_list : watchList.test_server_list;
+// console.log('server_list', server_list);
+
+const promisedProbe = (server) => {
+  return new Promise((resolve, reject) => {
+    tcpp.probe(server.address, server.port, (err, isAlive) => {
+      if (!err) {
+        resolve(isAlive);
+      }
+      reject(false);
+    });
+  });
 };
 
-const checkTarget2 = {
-    address: 'localhost',
-    port: 8080
-};
-
-const promiseProbe = (targetSystem) => {
-    return new Promise((resolve, reject) => {
-        tcpp.probe(targetSystem.address, targetSystem.port, (err, available) => {
-            if (!err) {
-                console.log('tcp ping: ' + available);
-                resolve(available);
-            }
-            reject(false);
-        });
-    });    
+async function server_check(server_list) {
+  const checkedList = [];
+  for (const server of server_list) {
+    const isAlive = await promisedProbe(server);
+    checkedList.push({
+      ...server,
+      isAlive: isAlive,
+    });
+  }
+  return checkedList;
 }
 
-const mytest = async(targetSystem) => {
-    const res = await promiseProbe(targetSystem);
-    console.log("in mytest: " + res + " system: " + targetSystem.address + " port: " + targetSystem.port);
-}
-
-mytest(checkTarget)
-mytest(checkTarget2)
+(async () => {
+  let result_list = [];
+  result_list = await server_check(server_list);
+  console.log("result_list:", result_list);
+})();
