@@ -1,5 +1,5 @@
 const DEV_MODE = true;
-const BACKEND_PORT = 8888;
+const BACKEND_PORT = 9999;
 const REDIS_SERVER = {
   host: "127.0.0.1",
   port: 6379,
