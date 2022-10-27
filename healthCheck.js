@@ -1,9 +1,13 @@
 const tcpp = require('tcp-ping')
-const config = require('./config/config')
 const watchList = require('./config/watchList')
+const { ENV_MODE, MODE } = require('./config/config')
 
-const isDevMode = config.hasOwnProperty('devMode') ? config.devMode : false
-const server_list = isDevMode ? watchList.dev_server_list : watchList.test_server_list
+const server_list =
+    ENV_MODE === MODE.PROD
+        ? watchList.server_list
+        : ENV_MODE === MODE.TEST
+        ? watchList.test_server_list
+        : watchList.dev_server_list
 
 const promisedProbe = (server) => {
     return new Promise((resolve, reject) => {
@@ -27,12 +31,6 @@ async function server_check(server_list) {
     }
     return checkedList
 }
-
-// (async () => {
-//     let result_list = []
-//     result_list = await server_check(server_list)
-//     console.log('result_list:', result_list)
-// })()
 
 async function server_status(req, res) {
     if (!req.body.hasOwnProperty('address') || !req.body.hasOwnProperty('port')) {
