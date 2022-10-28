@@ -25,7 +25,7 @@ app.post('/backapi/viewCookie', async (req, res) => debugging.viewCookie(req, re
 app.post('/backapi/viewSession', async (req, res) => debugging.viewSession(req, res))
 
 // get Server list and Status (req and res have JSON data)
-app.post('/backapi/server', async (req, res) => healthCheck.server_status(req, res))
+app.get('/backapi/server', async (req, res) => healthCheck.server_status(req, res))
 
 // Listening on port
 app.listen(backendPort, () => {
