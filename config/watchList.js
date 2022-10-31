@@ -3,7 +3,7 @@ const server_list = []
 const test_server_list = [
     {
         category: 'Redis',
-        displayName: 'dev-Redis',
+        displayName: 'test-Redis',
         address: 'localhost',
         port: 6379,
     },
