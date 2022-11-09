@@ -24,7 +24,7 @@ async function server_check(server_list) {
     const checkedList = []
     for (const server of server_list) {
         const isAlive = await promisedProbe(server)
-        const { port, ...rest } = server;
+        const { port, ...rest } = server
         checkedList.push({
             ...rest,
             isAlive: isAlive,
@@ -34,16 +34,12 @@ async function server_check(server_list) {
 }
 
 async function server_status(req, res) {
-    console.log('called: server_status');
-    if (!req.body.hasOwnProperty('address') || !req.body.hasOwnProperty('port')) {
+    const address = req.query.address
+    const port = req.query.port
+    if (!address || !port) {
         res.send(await server_check(server_list))
     } else {
-        const server = [
-            {
-                address: req.body.address,
-                port: req.body.port,
-            },
-        ]
+        const server = [{ address, port }]
         res.send(await server_check(server))
     }
 }
