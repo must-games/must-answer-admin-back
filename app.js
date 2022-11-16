@@ -6,6 +6,7 @@ const querystring = require('node:querystring')
 const { BACKEND_PORT } = require('./config/config')
 const debugging = require('./debugging')
 const healthCheck = require('./healthCheck')
+const quizPackFileHandler = require('./quizPack/quizPackFileHandler')
 
 // Read/Set Config
 const backendPort = BACKEND_PORT
@@ -26,6 +27,9 @@ app.post('/backapi/viewSession', async (req, res) => debugging.viewSession(req, 
 
 // get Server list and Status (req and res have JSON data)
 app.get('/backapi/server', async (req, res) => healthCheck.server_status(req, res))
+
+// Quiz File List and Upload
+app.use('/backapi/quizpack-files', quizPackFileHandler)
 
 // Listening on port
 app.listen(backendPort, () => {
