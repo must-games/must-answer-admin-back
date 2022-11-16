@@ -103,7 +103,13 @@ const dev_server_list = [
     },
     {
         category: 'Web-Proxy',
-        displayName: 'dev-nginx',
+        displayName: 'dev-nginx443',
+        address: 'localhost',
+        port: 443,
+    },
+    {
+        category: 'Web-Proxy',
+        displayName: 'dev-nginx80',
         address: 'localhost',
         port: 80,
     },
