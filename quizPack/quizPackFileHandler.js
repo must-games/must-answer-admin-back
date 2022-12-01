@@ -1,4 +1,5 @@
 const express = require('express')
+const fileUpload = require('express-fileupload')
 const fs = require('fs')
 const path = require('path')
 const moment = require('moment')
@@ -25,6 +26,17 @@ const tempFileDir = (() => {
 })()
 
 const app = express()
+
+// Prepare File-Upload
+app.use(
+    fileUpload({
+        defParamCharset: 'utf8',
+        createParentPath: true,
+        limits: { fileSize: 1024 * 1024 },
+        useTempFiles: true,
+        tempFileDir: tempFileDir,
+    })
+)
 
 // Get webserver-list
 app.get('/webserver-list', async (req, res) => {
@@ -93,6 +105,32 @@ app.get('/files-info', (req, res) => {
         // title: 'files info base on /backapi/quizpack-files/files-info',
         revision: revision,
         filesInfo: filesInfo,
+    })
+})
+
+// File Upload (basic implementation, 22-11-29)
+app.post('/upload', (req, res) => {
+    let uploadFile
+    let uploadPath
+
+    if (!req.files || Object.keys(req.files).length === 0) {
+        return res.status(400).send('No files were uploaded.')
+    }
+
+    // The name of the input field (i.e. "uploadFile") is used to retrieve the uploaded file
+    uploadFile = req.files.uploadFile
+    uploadPath = path.join(__dirname, '../../..', 'upload', uploadFile.name)
+    console.log('temp file Path', uploadFile.tempFilePath)
+    console.log('uploadFile.name', uploadFile.name)
+    console.log('__dirname', __dirname)
+    console.log('uploadPath', uploadPath)
+
+    // Use the mv() method to place the file somewhere on your server
+    uploadFile.mv(uploadPath, function (err) {
+        if (err) return res.status(500).send(err)
+
+        fs.chmodSync(uploadPath, 0o666) // remove execute mode on Linux/Unix
+        res.json(fs.readFileSync(uploadPath, 'utf8'))
     })
 })
 
