@@ -43,7 +43,7 @@ app.get('/hello', async (req, res) => {
         body = req.body
 
     res.send({
-        title: 'hello on /backapi/quizpack/',
+        title: 'echo hello on /backapi/quizpack-files/',
         url: url,
         cookie: cookie,
         body: body,
