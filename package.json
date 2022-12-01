@@ -17,6 +17,7 @@
     "express-fileupload": "^1.4.0",
     "helmet": "^6.0.0",
     "ioredis": "^5.2.3",
+    "moment": "^2.29.4",
     "morgan": "^1.10.0",
     "pm2": "^5.2.2",
     "tcp-ping": "^0.1.1"

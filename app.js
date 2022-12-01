@@ -1,7 +1,6 @@
 const express = require('express')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
-const fileUpload = require('express-fileupload')
 const querystring = require('node:querystring')
 const { BACKEND_PORT } = require('./config/config')
 const debugging = require('./debugging')
@@ -15,9 +14,12 @@ const backendPort = BACKEND_PORT
 const app = express()
 app.use(express.urlencoded({ extended: false })) // parse application/x-www-form-urlencoded
 app.use(express.json()) // parsing application/json
-app.use(cors()) // CROS
+app.use(cors({
+    origin: '*',
+    optionsSuccessStatus: 200,
+ })) // CORS
 app.use(cookieParser()) // cookie-parser
-app.use(fileUpload()) // Prepare File-Upload
+
 
 // works only if envMode == MODE.DEV or MODE.TEST. See config.js
 app.post('/backapi', (req, res) => debugging.rootPath(req, res))
