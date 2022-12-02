@@ -110,6 +110,9 @@ app.get('/files-info', (req, res) => {
 
 // File Upload (basic implementation, 22-11-29)
 app.post('/upload', (req, res) => {
+    console.log('req.headers in /upload: ', req.headers)
+    console.log('req.host in /upload: ', req.hostname)
+    console.log('req.originalUrl in /upload: ', req.originalUrl)
     let uploadFile
     let uploadPath
 
@@ -118,7 +121,9 @@ app.post('/upload', (req, res) => {
     }
 
     // The name of the input field (i.e. "uploadFile") is used to retrieve the uploaded file
+    console.log('req.files ', req.files)
     uploadFile = req.files.uploadFile
+    console.log('uploadFile: ', uploadFile)
     uploadPath = path.join(__dirname, '../../..', 'upload', uploadFile.name)
     console.log('temp file Path', uploadFile.tempFilePath)
     console.log('uploadFile.name', uploadFile.name)
@@ -130,7 +135,8 @@ app.post('/upload', (req, res) => {
         if (err) return res.status(500).send(err)
 
         fs.chmodSync(uploadPath, 0o666) // remove execute mode on Linux/Unix
-        res.json(fs.readFileSync(uploadPath, 'utf8'))
+        // res.json(fs.readFileSync(uploadPath, 'utf8'))
+        res.end()
     })
 })
 
