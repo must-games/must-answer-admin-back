@@ -6,6 +6,7 @@ const { BACKEND_PORT } = require('./config/config')
 const debugging = require('./debugging')
 const healthCheck = require('./healthCheck')
 const quizPackFileHandler = require('./quizPack/quizPackFileHandler')
+const quizPackFileHandler2 = require('./quizPack/quizPackFileHandler2')
 
 // Read/Set Config
 const backendPort = BACKEND_PORT
@@ -32,6 +33,8 @@ app.get('/backapi/server', async (req, res) => healthCheck.server_status(req, re
 
 // Quiz File List and Upload
 app.use('/backapi/quizpack-files', quizPackFileHandler)
+// Temporary quizPackFileHandler2 (for chekcing nginx proxy_pass with /w02/backapi2 )
+app.use('/backapi2/quizpack-files', quizPackFileHandler2)
 
 // Listening on port
 app.listen(backendPort, () => {

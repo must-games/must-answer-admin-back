@@ -3,16 +3,8 @@ const fileUpload = require('express-fileupload')
 const fs = require('fs')
 const path = require('path')
 const moment = require('moment')
-const watchList = require('../config/watchList')
 const { ENV_MODE, MODE } = require('../config/config')
 const resourceFiles = require('../config/quizpackFiles')
-
-const server_list =
-    ENV_MODE === MODE.PROD
-        ? watchList.server_list
-        : ENV_MODE === MODE.TEST
-        ? watchList.test_server_list
-        : watchList.dev_server_list
 
 const tempFileDir = (() => {
     switch (ENV_MODE) {
@@ -37,16 +29,6 @@ app.use(
         tempFileDir: tempFileDir,
     })
 )
-
-// Get webserver-list
-app.get('/webserver-list', async (req, res) => {
-    const webServers = server_list.filter((server) => server.category === 'Web-Proxy')
-
-    res.send({
-        title: 'webserver-list',
-        webServers: webServers,
-    })
-})
 
 // Hello for test & healthcheck
 app.get('/hello', async (req, res) => {
@@ -107,7 +89,7 @@ app.post('/upload', (req, res) => {
 
     // The key of the formData.append('uploadFile'~) is used to retrieve the uploaded file
     const uploadFile = req.files.uploadFile
-    const uploadPath = path.join(__dirname, '../../..', 'upload', uploadFile.name)
+    const uploadPath = path.join(__dirname, '../../..', 'upload', 'w02_' + uploadFile.name)
 
     // Use the mv() method to place the file somewhere on your server
     uploadFile.mv(uploadPath, function (err) {
@@ -115,7 +97,7 @@ app.post('/upload', (req, res) => {
 
         fs.chmodSync(uploadPath, 0o666) // remove execute mode on Linux/Unix
         res.send({
-            result: 'upload success',
+            result: 'upload success on w02',
             filePath: uploadPath,
         })
     })
