@@ -105,9 +105,11 @@ app.post('/upload', (req, res) => {
         return res.status(400).send('No files were uploaded.')
     }
 
+    const baseDir = path.join('H:', 'ktquiz_dev', 'nginx-1.20.2', 'html', 'data')
+
     // The key of the formData.append('uploadFile'~) is used to retrieve the uploaded file
     const uploadFile = req.files.uploadFile
-    const uploadPath = path.join(__dirname, '../../..', 'upload', uploadFile.name)
+    const uploadPath = path.join(baseDir, uploadFile.name)
 
     // Use the mv() method to place the file somewhere on your server
     uploadFile.mv(uploadPath, function (err) {
@@ -118,6 +120,26 @@ app.post('/upload', (req, res) => {
             result: 'upload success',
             filePath: uploadPath,
         })
+    })
+})
+
+// Update revision.txt
+app.post('/updateRevision', (req, res) => {
+    const { newRevision } = req.body
+
+    const baseDir = path.join('H:', 'ktquiz_dev', 'nginx-1.20.2', 'html', 'data')
+    let revision;
+    try {
+        const revisionTxtPath = path.join(baseDir, 'revision.txt')
+        fs.writeFileSync(revisionTxtPath, newRevision.toString() + '\r\n', 'utf8')
+        revision = newRevision
+    } catch (err) {
+        res.status(500)
+        revision = 'Error whild updating revision.txt'
+    }
+
+    res.send({
+        revision: revision,
     })
 })
 
