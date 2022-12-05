@@ -110,7 +110,7 @@ app.post('/updateRevision', (req, res) => {
     const { newRevision } = req.body
 
     const baseDir = path.join('H:', 'ktquiz_dev', 'nginx-1.20.2', 'html', 'data')
-    let revision;
+    let revision
     try {
         const revisionTxtPath = path.join(baseDir, 'revision.txt')
         fs.writeFileSync(revisionTxtPath, newRevision.toString() + '\r\n', 'utf8')
@@ -122,6 +122,19 @@ app.post('/updateRevision', (req, res) => {
 
     res.send({
         revision: revision,
+    })
+})
+
+// Update revision.txt
+app.get('/download/:fileName', (req, res) => {
+    const fileName = req.params.fileName
+
+    const baseDir = path.join('H:', 'ktquiz_dev', 'nginx-1.20.2', 'html', 'data')
+    const targetFile = path.join(baseDir, fileName)
+    res.download(targetFile, function(err) {
+        if(err) {
+            console.error(err)
+        }
     })
 })
 
