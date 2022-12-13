@@ -29,6 +29,7 @@ bin/
 *.iml
 !**/testData/**/*.iml
 node_modules/
+npm_packages/
 .rpt2_cache/
 libraries/tools/kotlin-test-js-runner/lib/
 local.properties
