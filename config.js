@@ -32,6 +32,10 @@ const SERVER_LIST = (() => {
 const REDIS_SERVER = (() => {
     switch (ENV_MODE) {
         case MODE.DEV:
+            return {
+                host: '127.0.0.1',
+                port: 6379,
+            }
         case MODE.TEST:
             return {
                 host: '127.0.0.1',
