@@ -3,30 +3,8 @@ const fileUpload = require('express-fileupload')
 const fs = require('fs')
 const path = require('path')
 const moment = require('moment')
-const { ENV_MODE, MODE } = require('../config')
+const { ENV_MODE, MODE, TEMP_FILE_DIR, BASE_DIR } = require('../config')
 const resourceFiles = require('../resources/quizpackFiles')
-
-const tempFileDir = (() => {
-    switch (ENV_MODE) {
-        case MODE.PROD:
-            return '/tmp' //needs check PROD env
-        case MODE.TEST:
-            return '/tmp'
-        default:
-            return 'd:\\temp'
-    }
-})()
-
-const baseDir = (() => {
-    switch (ENV_MODE) {
-        case MODE.PROD:
-            return path.join('/nginx', 'app', 'nginx-1.20.1', 'html', 'data')
-        case MODE.TEST:
-            return path.join('/nginx', 'app', 'nginx-1.20.1', 'html', 'data')
-        default:
-            return path.join('H:', 'ktquiz_dev', 'nginx-1.20.2', 'html', 'data')
-    }
-})()
 
 const app = express()
 
@@ -37,7 +15,7 @@ app.use(
         createParentPath: true,
         limits: { fileSize: 1024 * 1024 },
         useTempFiles: true,
-        tempFileDir: tempFileDir,
+        tempFileDir: TEMP_FILE_DIR,
     })
 )
 
@@ -59,7 +37,7 @@ app.get('/hello', async (req, res) => {
 app.get('/files-info', (req, res) => {
     let revision = null
     try {
-        const revisionTxtPath = path.join(baseDir, 'revision.txt')
+        const revisionTxtPath = path.join(BASE_DIR, 'revision.txt')
         revision = Number(fs.readFileSync(revisionTxtPath, 'utf8'))
     } catch (err) {
         res.status(404)
@@ -70,7 +48,7 @@ app.get('/files-info', (req, res) => {
     resourceFiles.map((file) => {
         let fileInfo = {}
         try {
-            fileInfo = moment(fs.statSync(path.join(baseDir, file)).mtime).format(
+            fileInfo = moment(fs.statSync(path.join(BASE_DIR, file)).mtime).format(
                 'YYYY-MM-DD HH:mm:ss'
             )
         } catch (err) {
@@ -98,7 +76,7 @@ app.post('/upload', (req, res) => {
 
     // The key of the formData.append('uploadFile'~) is used to retrieve the uploaded file
     const uploadFile = req.files.uploadFile
-    const uploadPath = path.join(baseDir, 'w02_' + uploadFile.name)
+    const uploadPath = path.join(BASE_DIR, 'w02_' + uploadFile.name)
 
     // Use the mv() method to place the file somewhere on your server
     uploadFile.mv(uploadPath, function (err) {
@@ -118,7 +96,7 @@ app.post('/updateRevision', (req, res) => {
 
     let revision
     try {
-        const revisionTxtPath = path.join(baseDir, 'revision.txt')
+        const revisionTxtPath = path.join(BASE_DIR, 'revision.txt')
         fs.writeFileSync(revisionTxtPath, newRevision.toString() + '\r\n', 'utf8')
         revision = newRevision
     } catch (err) {
@@ -135,7 +113,7 @@ app.post('/updateRevision', (req, res) => {
 app.get('/download/:fileName', (req, res) => {
     const fileName = req.params.fileName
     
-    const targetFile = path.join(baseDir, fileName)
+    const targetFile = path.join(BASE_DIR, fileName)
     res.download(targetFile, function(err) {
         if(err) {
             console.error(err)

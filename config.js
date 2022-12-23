@@ -1,3 +1,4 @@
+const path = require('path')
 const { prod_server_list, test_server_list, dev_server_list } = require('./resources/serverList')
 
 const MODE = {
@@ -12,6 +13,8 @@ Object.freeze(MODE)
 const ENV_MODE = MODE.DEV
 // const ENV_MODE = MODE.TEST
 // const ENV_MODE = MODE.PROD
+
+const BACKEND_PORT = 9999
 
 const SERVER_LIST = (() => {
     switch (ENV_MODE) {
@@ -52,7 +55,27 @@ const REDIS_SERVER = (() => {
     }
 })()
 
-const BACKEND_PORT = 9999
+const TEMP_FILE_DIR = (() => {
+    switch (ENV_MODE) {
+        case MODE.PROD:
+            return '/tmp' // KT Server: CentOS
+        case MODE.TEST:
+            return '/tmp' // AWS EC2 : 
+        default:
+            return 'd:\\temp'  // Simon's Local PC
+    }
+})()
+
+const BASE_DIR = (() => {
+    switch (ENV_MODE) {
+        case MODE.PROD:
+            return path.join('/nginx', 'app', 'nginx-1.20.1', 'html', 'data')
+        case MODE.TEST:
+            return path.join('/nginx', 'app', 'nginx-1.20.1', 'html', 'data')
+        default:
+            return path.join('H:', 'ktquiz_dev', 'nginx-1.20.2', 'html', 'data')
+    }
+})()
 
 console.log('ENV_MODE ', ENV_MODE, ' MODE ', MODE)
 
@@ -62,4 +85,6 @@ module.exports = {
     BACKEND_PORT,
     SERVER_LIST,
     REDIS_SERVER,
+    TEMP_FILE_DIR,
+    BASE_DIR,
 }
