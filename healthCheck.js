@@ -1,8 +1,7 @@
 const tcpp = require('tcp-ping')
 const { SERVER_LIST } = require('./config')
 
-const server_list =SERVER_LIST
-
+// make promised version of tcpp.probe
 const promisedProbe = (server) => {
     return new Promise((resolve, reject) => {
         tcpp.probe(server.address, server.port, (err, isAlive) => {
@@ -28,10 +27,9 @@ async function server_check(server_list) {
 }
 
 async function server_status(req, res) {
-    const address = req.query.address
-    const port = req.query.port
+    const { address, port } = req.query
     if (!address || !port) {
-        res.send(await server_check(server_list))
+        res.send(await server_check(SERVER_LIST))
     } else {
         const server = [{ address, port }]
         res.send(await server_check(server))
