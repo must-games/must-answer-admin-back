@@ -1,7 +1,7 @@
 const session = require('./session')
 const querystring = require('node:querystring')
 const ErrorMessage = require('./errorMessage')
-const { ENV_MODE, MODE } = require('./config/config')
+const { ENV_MODE, MODE } = require('./config')
 
 function rootPath(req, res) {
     const url = req.url,

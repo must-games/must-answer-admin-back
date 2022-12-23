@@ -1,4 +1,4 @@
-const server_list = [
+const prod_server_list = [
     {
         category: 'Redis',
         displayName: 'e01-prd-Redis',
@@ -128,7 +128,7 @@ const dev_server_list = [
 ]
 
 module.exports = {
-    server_list,
+    prod_server_list,
     test_server_list,
     dev_server_list,
 }

@@ -1,5 +1,5 @@
 const Redis = require('ioredis')
-const { REDIS_SERVER } = require('./config/config')
+const { REDIS_SERVER } = require('./config')
 const redis = new Redis({
     port: REDIS_SERVER.port,
     host: REDIS_SERVER.host,

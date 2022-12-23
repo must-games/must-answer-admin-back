@@ -3,16 +3,10 @@ const fileUpload = require('express-fileupload')
 const fs = require('fs')
 const path = require('path')
 const moment = require('moment')
-const watchList = require('../config/watchList')
-const { ENV_MODE, MODE } = require('../config/config')
-const resourceFiles = require('../config/quizpackFiles')
+const { ENV_MODE, MODE, SERVER_LIST } = require('../config')
+const resourceFiles = require('../resources/quizpackFiles')
 
-const server_list =
-    ENV_MODE === MODE.PROD
-        ? watchList.server_list
-        : ENV_MODE === MODE.TEST
-        ? watchList.test_server_list
-        : watchList.dev_server_list
+const server_list = SERVER_LIST
 
 const tempFileDir = (() => {
     switch (ENV_MODE) {
@@ -22,6 +16,17 @@ const tempFileDir = (() => {
             return '/tmp'
         default:
             return 'd:\\temp'
+    }
+})()
+
+const baseDir = (() => {
+    switch (ENV_MODE) {
+        case MODE.PROD:
+            return path.join('/nginx', 'app', 'nginx-1.20.1', 'html', 'data')
+        case MODE.TEST:
+            return path.join('/nginx', 'app', 'nginx-1.20.1', 'html', 'data')
+        default:
+            return path.join('H:', 'ktquiz_dev', 'nginx-1.20.2', 'html', 'data')
     }
 })()
 
@@ -64,8 +69,6 @@ app.get('/hello', async (req, res) => {
 
 // get files info for quizpack resource
 app.get('/files-info', (req, res) => {
-    const baseDir = path.join('H:', 'ktquiz_dev', 'nginx-1.20.2', 'html', 'data')
-
     let revision = null
     try {
         const revisionTxtPath = path.join(baseDir, 'revision.txt')
@@ -105,8 +108,6 @@ app.post('/upload', (req, res) => {
         return res.status(400).send('No files were uploaded.')
     }
 
-    const baseDir = path.join('H:', 'ktquiz_dev', 'nginx-1.20.2', 'html', 'data')
-
     // The key of the formData.append('uploadFile'~) is used to retrieve the uploaded file
     const uploadFile = req.files.uploadFile
     const uploadPath = path.join(baseDir, uploadFile.name)
@@ -127,7 +128,6 @@ app.post('/upload', (req, res) => {
 app.post('/updateRevision', (req, res) => {
     const { newRevision } = req.body
 
-    const baseDir = path.join('H:', 'ktquiz_dev', 'nginx-1.20.2', 'html', 'data')
     let revision
     try {
         const revisionTxtPath = path.join(baseDir, 'revision.txt')
@@ -147,7 +147,6 @@ app.post('/updateRevision', (req, res) => {
 app.get('/download/:fileName', (req, res) => {
     const fileName = req.params.fileName
 
-    const baseDir = path.join('H:', 'ktquiz_dev', 'nginx-1.20.2', 'html', 'data')
     const targetFile = path.join(baseDir, fileName)
     res.download(targetFile, function(err) {
         if(err) {

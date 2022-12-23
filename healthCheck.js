@@ -1,13 +1,7 @@
 const tcpp = require('tcp-ping')
-const watchList = require('./config/watchList')
-const { ENV_MODE, MODE } = require('./config/config')
+const { SERVER_LIST } = require('./config')
 
-const server_list =
-    ENV_MODE === MODE.PROD
-        ? watchList.server_list
-        : ENV_MODE === MODE.TEST
-        ? watchList.test_server_list
-        : watchList.dev_server_list
+const server_list =SERVER_LIST
 
 const promisedProbe = (server) => {
     return new Promise((resolve, reject) => {
