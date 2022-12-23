@@ -8,9 +8,6 @@ const healthCheck = require('./healthCheck')
 const quizPackFileHandler = require('./quizPack/quizPackFileHandler')
 const quizPackFileHandler2 = require('./quizPack/quizPackFileHandler2')
 
-// Read/Set Config
-const backendPort = BACKEND_PORT
-
 // Set Exxpress
 const app = express()
 app.use(express.urlencoded({ extended: false })) // parse application/x-www-form-urlencoded
@@ -37,6 +34,6 @@ app.use('/backapi/quizpack-files', quizPackFileHandler)
 app.use('/backapi2/quizpack-files', quizPackFileHandler2)
 
 // Listening on port
-app.listen(backendPort, () => {
-    console.log(`listening on port ${backendPort}`)
+app.listen(BACKEND_PORT, () => {
+    console.log(`listening on port ${BACKEND_PORT}`)
 })
