@@ -1,98 +1,39 @@
-const express=require('express')
-const cookieParser=require('cookie-parser')
-const cors=require('cors')
-const fileUpload=require('express-fileupload')
-const querystring=require('node:querystring')
-const session=require('./session')
-const config = require('./config')
-
-
-// Read/Set Config
-const devMode = config.hasOwnProperty('devMode') ? config.devMode : false
-const backendPort = config.hasOwnProperty('backendPort') ? config.backendPort : 8888
+const express = require('express')
+const cookieParser = require('cookie-parser')
+const cors = require('cors')
+const querystring = require('node:querystring')
+const { BACKEND_PORT } = require('./config')
+const debugging = require('./debugging')
+const healthCheck = require('./healthCheck')
+const quizPackFileHandler = require('./quizPack/quizPackFileHandler')
+const quizPackFileHandler2 = require('./quizPack/quizPackFileHandler2')
 
 // Set Exxpress
-const app = express() 
+const app = express()
 app.use(express.urlencoded({ extended: false })) // parse application/x-www-form-urlencoded
-app.use(express.json());  // parsing application/json
-app.use(cors())           // CROS
-app.use(cookieParser());  // cookie-parser
-app.use(fileUpload());    // Prepare File-Upload
+app.use(express.json()) // parsing application/json
+app.use(cors({
+    origin: '*',
+    optionsSuccessStatus: 200,
+ })) // CORS
+app.use(cookieParser()) // cookie-parser
 
-// IS it dev-mode?
-if (devMode) {
-  console.log('devMode ', devMode)
-}
 
-app.post('/backapi', (req, res)=>{
-  const url = req.url
-  const cookie = req.cookies;
-  const body = req.body;
-  console.log('url: ', url)
-  console.log('cookie: ', cookie)
-  console.log('body: ', body)
-  res.send({
-    title: "hello on POST",
-    url: url,
-    cookie: cookie,
-    body: body
-  })
-})
+// works only if envMode == MODE.DEV or MODE.TEST. See config.js
+app.post('/backapi', (req, res) => debugging.rootPath(req, res))
+app.get('/backapi', (req, res) => debugging.rootPath(req, res))
+app.post('/backapi/viewCookie', async (req, res) => debugging.viewCookie(req, res))
+app.post('/backapi/viewSession', async (req, res) => debugging.viewSession(req, res))
 
-app.get('/backapi', (req, res)=>{
-  const url = req.url
-  const cookie = req.cookies
-  const body = req.body
-  console.log('url: ', url)
-  console.log('cookie: ', cookie)
-  console.log('body: ', body)
-  res.send({
-    title: "hello on GET /backapi",
-    url: url,
-    cookie: cookie,
-    body: body
-  })
-})
+// get Server list and Status (req and res have JSON data)
+app.get('/backapi/server', async (req, res) => healthCheck.server_status(req, res))
 
-app.post('/backapi/viewSession', async (req, res)=>{  
-  const url = req.url
-  const cookie = req.cookies
-  const body = req.body
+// Quiz File List and Upload
+app.use('/backapi/quizpack-files', quizPackFileHandler)
+// Temporary quizPackFileHandler2 (for chekcing nginx proxy_pass with /w02/backapi2 )
+app.use('/backapi2/quizpack-files', quizPackFileHandler2)
 
-  try {
-    if (!devMode) throw new Error('viewSession API is for Dev Mode')
-    const authSession = cookie['auth-session'] // get auth-session(key) from cookie
-    if (!authSession) throw new Error('No Auth Session Key in Cookie')
-
-    const checkAuthSession = await session.isAuth(authSession)
-    if(!checkAuthSession) throw new Error('No Auth Session Value on SessionStorage')
-
-    const sessionValue = await session.getSession(authSession)  // get session value(BASE64) from REDIS
-    const decodedSession = Buffer.from(sessionValue, 'base64').toString('utf-8') // BASE64 Decoding
-    const parsedSession = querystring.parse(decodedSession)
-  
-    res.send({
-      title: "hello on POST /backapi/viewSession",
-      url: url,
-      cookie: cookie,
-      body: body,
-      authSession: authSession,
-      sessionValue: sessionValue,
-      decodedSession: decodedSession,
-      parsedSession: parsedSession
-    })
-  } catch (err) {
-    console.error(err)
-    res.send({
-      error: true,
-      title: err.message + ' on POST /backapi/viewSession',
-      url: url,
-      cookie: cookie,
-      body: body
-    })
-  }
-})
-
-app.listen(backendPort, () => {
-  console.log(`listening on port ${backendPort}`)
+// Listening on port
+app.listen(BACKEND_PORT, () => {
+    console.log(`listening on port ${BACKEND_PORT}`)
 })
